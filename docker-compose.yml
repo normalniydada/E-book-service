@@ -1,0 +1,47 @@
+version: '3.8' # Рекомендуется использовать 3.8 для лучшей поддержки healthcheck и секретов
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      # Данные подтягиваются напрямую из твоего .env
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "${DB_PORT_EXTERNAL:-5432}:5432" # Внешний порт из .env, иначе 5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      # Используем переменные и в проверке здоровья
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "${REDIS_PORT_EXTERNAL:-6379}:6379"
+    volumes:
+      - "redis_data:/data"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - app_network
+
+volumes:
+  db_data:
+  redis_data:
+
+networks:
+  app_network:
+    driver: bridge
