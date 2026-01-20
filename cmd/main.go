@@ -20,10 +20,8 @@ import (
 )
 
 func main() {
-	// 1. Загрузка .env
 	_ = godotenv.Load() // Ошибку игнорируем, так как в Docker переменные прокинуты напрямую
 
-	// 2. Формирование DSN
 	dsn := os.Getenv("DB_DSN")
 	if dsn == "" {
 		// Если DSN не задан целиком, собираем из частей
@@ -37,7 +35,6 @@ func main() {
 		)
 	}
 
-	// 3. Подключение к БД
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to DB: %v", err)
@@ -48,12 +45,10 @@ func main() {
 		log.Fatalf("failed to migrate database: %v", err)
 	}
 
-	// 4. Redis
 	rdb := redis.NewClient(&redis.Options{
 		Addr: os.Getenv("REDIS_ADDR"),
 	})
 
-	// 5. Инициализация слоев
 	jwtSecret := os.Getenv("JWT_SECRET")
 	repo := repository.NewRepository(db)
 	svc := service.NewService(repo, jwtSecret)
@@ -105,7 +100,6 @@ func main() {
 		a.PUT("/shelf/:id", h.AddToShelf)
 	}
 
-	// 7. Start
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = ":8080"
