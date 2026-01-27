@@ -46,7 +46,6 @@ func NewRepository(db *gorm.DB) Repository {
 	return &postgresRepository{db: db}
 }
 
-// Реализация методов (те же самые, что были у тебя)
 func (r *postgresRepository) CreateUser(u *domain.User) error { return r.db.Create(u).Error }
 func (r *postgresRepository) GetUserByEmail(email string) (*domain.User, error) {
 	var u domain.User

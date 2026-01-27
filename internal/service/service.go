@@ -10,7 +10,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// ServiceInterface - для тестирования хендлеров
 type ServiceInterface interface {
 	Register(email, pass, name string) error
 	Login(email, pass string) (string, error)
@@ -44,7 +43,6 @@ func NewService(r repository.Repository, key string) ServiceInterface {
 	return &service{repo: r, jwtKey: key}
 }
 
-// AUTH & PROFILE
 func (s *service) Register(email, pass, name string) error {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
 	return s.repo.CreateUser(&domain.User{Email: email, Password: string(hash), Name: name})

@@ -24,17 +24,14 @@ type ShelfStatusRequest struct {
 	Status string `json:"status"`
 }
 
-// Handler теперь зависит от интерфейса ServiceInterface
 type Handler struct {
 	svc service.ServiceInterface
 }
 
-// NewHandler принимает интерфейс, что позволяет передавать в него моки в тестах
 func NewHandler(s service.ServiceInterface) *Handler {
 	return &Handler{svc: s}
 }
 
-// Вспомогательная функция для получения ID пользователя из JWT контекста
 func getUID(c echo.Context) uint {
 	val := c.Get("user_id")
 	if val == nil {

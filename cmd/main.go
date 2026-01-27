@@ -29,11 +29,10 @@ import (
 // @host localhost:8080
 // @BasePath /
 func main() {
-	_ = godotenv.Load() // Ошибку игнорируем, так как в Docker переменные прокинуты напрямую
+	_ = godotenv.Load()
 
 	dsn := os.Getenv("DB_DSN")
 	if dsn == "" {
-		// Если DSN не задан целиком, собираем из частей
 		dsn = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
 			os.Getenv("DB_HOST"),
 			os.Getenv("DB_USER"),

@@ -78,8 +78,6 @@ func (m *MockRepository) GetShelf(uID uint) ([]domain.Shelf, error) {
 }
 func (m *MockRepository) RemoveFromShelf(uID, bID uint) error { return m.Called(uID, bID).Error(0) }
 
-// --- ТЕСТЫ ---
-
 func TestAuthAndProfile(t *testing.T) {
 	mockRepo := new(MockRepository)
 	svc := NewService(mockRepo, "test-key")

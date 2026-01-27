@@ -13,10 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-/* =========================
-   RateLimiter tests
-   ========================= */
-
 func setupEchoWithRateLimiter(rdb *redis.Client) *echo.Echo {
 	e := echo.New()
 	e.Use(RateLimiter(rdb))
@@ -75,10 +71,6 @@ func TestRateLimiter_TTLIsSet(t *testing.T) {
 	ttl := mr.TTL("rate_limit:127.0.0.1")
 	assert.True(t, ttl > 0 && ttl <= time.Minute)
 }
-
-/* =========================
-   JWTMiddleware tests
-   ========================= */
 
 func setupEchoWithJWT(secret string) *echo.Echo {
 	e := echo.New()
@@ -196,7 +188,6 @@ func TestJWTMiddleware_WrongSigningMethod(t *testing.T) {
 }
 
 func TestRateLimiter_RedisError(t *testing.T) {
-	// Некорректный адрес Redis → Incr вернёт ошибку
 	rdb := redis.NewClient(&redis.Options{
 		Addr: "127.0.0.1:0",
 	})

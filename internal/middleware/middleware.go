@@ -12,29 +12,24 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// RateLimiter ограничивает количество запросов с одного IP (GET, POST, PUT, DELETE и т.д.)
 func RateLimiter(rdb *redis.Client) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			ctx := context.Background()
 
-			// Ключ в Redis — это IP пользователя
 			ip := c.RealIP()
 			key := fmt.Sprintf("rate_limit:%s", ip)
 
-			// Инкрементируем счетчик
 			count, err := rdb.Incr(ctx, key).Result()
 			if err != nil {
 				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Redis error"})
 			}
 
-			// Если это первый запрос в цикле — ставим TTL (например, 1 минута)
 			if count == 1 {
 				rdb.Expire(ctx, key, time.Minute)
 			}
 
-			// Лимит: 60 запросов в минуту для любых методов
-			if count > 60 {
+			if count > 100 {
 				return c.JSON(http.StatusTooManyRequests, map[string]string{
 					"error": "Rate limit exceeded. Try again in a minute.",
 				})
