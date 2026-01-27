@@ -15,10 +15,19 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	echoMW "github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
+// @title E-book Service API
+// @version 1.0
+// @description API сервер для управления электронными книгами.
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+// @host localhost:8080
+// @BasePath /
 func main() {
 	_ = godotenv.Load() // Ошибку игнорируем, так как в Docker переменные прокинуты напрямую
 
@@ -57,6 +66,7 @@ func main() {
 	e := echo.New()
 	e.Use(echoMW.Recover())
 	e.Use(middleware.RateLimiter(rdb))
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	// Routes (PUBLIC)
 	e.GET("/health", h.Health)
@@ -64,6 +74,7 @@ func main() {
 	e.POST("/login", h.Login)
 
 	// Routes (PROTECTED)
+
 	a := e.Group("/api/v1")
 	a.Use(middleware.JWTMiddleware(jwtSecret))
 

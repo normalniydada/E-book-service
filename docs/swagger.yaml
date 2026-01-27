@@ -1,0 +1,514 @@
+definitions:
+  domain.Author:
+    properties:
+      bio:
+        type: string
+      books:
+        items:
+          $ref: '#/definitions/domain.Book'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  domain.Book:
+    properties:
+      author:
+        $ref: '#/definitions/domain.Author'
+      author_id:
+        type: integer
+      content:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      reviews:
+        items:
+          $ref: '#/definitions/domain.Review'
+        type: array
+      title:
+        type: string
+    type: object
+  domain.Review:
+    properties:
+      book_id:
+        type: integer
+      comment:
+        type: string
+      id:
+        type: integer
+      rating:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  domain.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  handler.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  handler.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  handler.ShelfStatusRequest:
+    properties:
+      status:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: API сервер для управления электронными книгами.
+  title: E-book Service API
+  version: "1.0"
+paths:
+  /authors:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Author'
+            type: array
+      summary: Список авторов
+      tags:
+      - Authors
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные автора
+        in: body
+        name: author
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Author'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Author'
+      security:
+      - ApiKeyAuth: []
+      summary: Создать автора
+      tags:
+      - Authors
+  /authors/{id}:
+    delete:
+      parameters:
+      - description: ID автора
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Удалить автора
+      tags:
+      - Authors
+    get:
+      parameters:
+      - description: ID автора
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Author'
+      summary: Инфо об авторе
+      tags:
+      - Authors
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID автора
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные
+        in: body
+        name: author
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Author'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Author'
+      security:
+      - ApiKeyAuth: []
+      summary: Обновить автора
+      tags:
+      - Authors
+  /authors/{id}/books:
+    get:
+      parameters:
+      - description: ID автора
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Book'
+            type: array
+      summary: Книги автора
+      tags:
+      - Authors
+  /books:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Book'
+            type: array
+      summary: Список всех книг
+      tags:
+      - Books
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные книги
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Book'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Book'
+      security:
+      - ApiKeyAuth: []
+      summary: Создать книгу
+      tags:
+      - Books
+  /books/{id}:
+    delete:
+      parameters:
+      - description: ID книги
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Удалить книгу
+      tags:
+      - Books
+    get:
+      parameters:
+      - description: ID книги
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Book'
+      summary: Получить книгу по ID
+      tags:
+      - Books
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID книги
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новые данные
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Book'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Book'
+      security:
+      - ApiKeyAuth: []
+      summary: Обновить книгу
+      tags:
+      - Books
+  /books/{id}/content:
+    get:
+      parameters:
+      - description: ID книги
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: content
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Текст книги
+      tags:
+      - Books
+  /books/{id}/reviews:
+    get:
+      parameters:
+      - description: ID книги
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Review'
+            type: array
+      summary: Список отзывов к книге
+      tags:
+      - Reviews
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID книги
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Отзыв
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Review'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Review'
+      security:
+      - ApiKeyAuth: []
+      summary: Добавить отзыв
+      tags:
+      - Reviews
+  /health:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Проверка работоспособности
+      tags:
+      - System
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные логина
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Авторизация
+      tags:
+      - Auth
+  /me:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+      security:
+      - ApiKeyAuth: []
+      summary: Получить свой профиль
+      tags:
+      - Profile
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные профиля
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/domain.User'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+      security:
+      - ApiKeyAuth: []
+      summary: Обновить профиль
+      tags:
+      - Profile
+  /register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные регистрации
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.RegisterRequest'
+      responses:
+        "201":
+          description: Created
+      summary: Регистрация пользователя
+      tags:
+      - Auth
+  /reviews/{id}:
+    delete:
+      parameters:
+      - description: ID отзыва
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Удалить отзыв
+      tags:
+      - Reviews
+  /shelf:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Book'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: Моя полка
+      tags:
+      - Shelf
+  /shelf/{id}:
+    delete:
+      parameters:
+      - description: ID книги
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Удалить с полки
+      tags:
+      - Shelf
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Статус
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.ShelfStatusRequest'
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Добавить на полку
+      tags:
+      - Shelf
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
